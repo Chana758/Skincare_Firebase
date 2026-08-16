@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Heart, ArrowRight } from "lucide-react";
 import { useFavorites } from "../../context/FavoritesContext";
 import { useAuth } from "../../context/AuthContext";
-import ProductCard from "../../components/common/Productcard";
+import ProductCard from "../../components/common/ProductCard";
 
 const Favorites = () => {
   const { currentUser } = useAuth();
