@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import p1 from "../../assets/Uploads/Probenner/p-10.png";
-import p2 from "../../assets/Uploads/Probenner/p-5.png";
+import p2 from "../../assets/Uploads/Probenner/p11.png";
 const PromoBanners = () => {
   return (
     <section className="px-6 md:px-20 py-16 bg-[#FDFBF9]">
