@@ -1,13 +1,14 @@
-// src/components/common/BestSellers.jsx
+
 import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { products } from "../../data/products";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { useProducts } from "../../hooks/useProducts";
 import ProductCard from "./ProductCard";
 
 const BestSellers = () => {
   const scrollRef = useRef(null);
-  const bestsellers = useMemo(() => products.filter((p) => p.bestseller), []);
+  const { products, loading } = useProducts();
+  const bestsellers = useMemo(() => products.filter((p) => p.bestseller), [products]);
 
   const scroll = (direction) => {
     const el = scrollRef.current;
@@ -17,54 +18,65 @@ const BestSellers = () => {
   };
 
   return (
-    <section className="px-6 md:px-20 py-20 bg-[#FDFBF9] relative">
-      <div className="flex items-end justify-between mb-12">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-rose-400 font-semibold mb-3">
-            Customer Favorites
-          </p>
-          <h2 className="text-4xl font-serif text-gray-900">Best Sellers</h2>
+    <section className="px-6 md:px-20 py-20 bg-white relative">
+      {/* Centered Luxury Header */}
+      <div className="text-center mb-16">
+        <h2 className="text-2xl md:text-3xl font-serif tracking-[0em] text-gray-900 uppercase">
+          Best Sellers
+        </h2>
+        
+        {/* Luxury Divider Style */}
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <div className="h-[2px] w-16 bg-rose-400" />
+          <span className="text-rose-600 text-xs">
+            <Sparkles size={20} />
+          </span>
+          <div className="h-[2px] w-16 bg-rose-400" />
         </div>
-        <Link
-          to="/best_sellers"
-          className="hidden md:block text-sm font-semibold uppercase tracking-wider hover:text-rose-400 transition"
-        >
-          View All →
-        </Link>
       </div>
 
-      <div className="relative">
-        {/* Left arrow */}
+      <div className="relative max-w-[1440px] mx-auto px-4 md:px-8">
+        {/* Left Scroll Button */}
         <button
           onClick={() => scroll("left")}
           aria-label="Scroll left"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-md rounded-full p-2.5 hover:bg-rose-50 transition hidden sm:flex items-center justify-center"
+          className="absolute -left-3 md:-left-6 top-1/2 -translate-y-1/2 z-10 bg-white border border-rose-100 shadow-md rounded-full p-3 hover:bg-rose-50 text-gray-700 transition hidden sm:flex items-center justify-center"
         >
-          <ChevronLeft size={20} className="text-gray-700" />
+          <ChevronLeft size={20} />
         </button>
 
-        {/* Scrollable row */}
+        {/* Products Container */}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
-          {bestsellers.map((product) => (
-            <div
-              key={product.id}
-              className="snap-start shrink-0 w-[45%] sm:w-[32%] md:w-[23%] lg:w-[19%]"
-            >
-              <ProductCard product={product} />
+          {loading ? (
+            <div className="w-full flex justify-center items-center py-12">
+              <div className="w-8 h-8 border-4 border-rose-300 border-t-transparent rounded-full animate-spin" />
             </div>
-          ))}
+          ) : bestsellers.length === 0 ? (
+            <div className="w-full text-center py-8 text-gray-400 text-sm italic">
+              No best seller products available at the moment.
+            </div>
+          ) : (
+            bestsellers.map((product) => (
+              <div
+                key={product.id}
+                className="snap-start shrink-0 w-[70%] sm:w-[45%] md:w-[30%] lg:w-[22%]"
+              >
+                <ProductCard product={product} />
+              </div>
+            ))
+          )}
         </div>
 
-        {/* Right arrow */}
+        {/* Right Scroll Button */}
         <button
           onClick={() => scroll("right")}
           aria-label="Scroll right"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white shadow-md rounded-full p-2.5 hover:bg-rose-50 transition hidden sm:flex items-center justify-center"
+          className="absolute -right-3 md:-right-6 top-1/2 -translate-y-1/2 z-10 bg-white border border-rose-100 shadow-md rounded-full p-3 hover:bg-rose-50 text-gray-700 transition hidden sm:flex items-center justify-center"
         >
-          <ChevronRight size={20} className="text-gray-700" />
+          <ChevronRight size={20} />
         </button>
       </div>
     </section>

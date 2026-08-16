@@ -1,15 +1,14 @@
-// src/context/CartContext.jsx
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
 const LOCAL_KEY = "lumiere_cart";
+const mergedFlagKey = (uid) => `lumiere_cart_merged_${uid}`;
 
 export const CartProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  // Lazy init ពី localStorage ដើម្បីជៀសវាង flash of empty cart
   const [items, setItems] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_KEY);
@@ -19,37 +18,60 @@ export const CartProvider = ({ children }) => {
     }
   });
 
-  // Sync localStorage ជានិច្ច (guest cart)
+  const [isInitialized, setIsInitialized] = useState(false);
+  const mergeInFlightRef = useRef(false);
+
+  // Sync to localStorage
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
   }, [items]);
 
-  // នៅពេល user login → merge cart ពី Firestore ជាមួយ local cart
+  // Merge Firestore cart with local cart on login
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setIsInitialized(false);
+      return;
+    }
+
+    const flagKey = mergedFlagKey(currentUser.uid);
+    if (localStorage.getItem(flagKey) || mergeInFlightRef.current) {
+      setIsInitialized(true);
+      return;
+    }
+
+    mergeInFlightRef.current = true;
+    localStorage.setItem(flagKey, "true");
+
     (async () => {
-      const cartRef = doc(db, "carts", currentUser.uid);
-      const snap = await getDoc(cartRef);
-      if (snap.exists() && snap.data().items?.length) {
-        setItems((prev) => {
-          const merged = [...snap.data().items];
-          prev.forEach((p) => {
-            const found = merged.find((m) => m.id === p.id);
-            if (found) found.qty += p.qty;
-            else merged.push(p);
+      try {
+        const cartRef = doc(db, "carts", currentUser.uid);
+        const snap = await getDoc(cartRef);
+        if (snap.exists() && snap.data().items?.length) {
+          setItems((prev) => {
+            const merged = [...snap.data().items];
+            prev.forEach((p) => {
+              const found = merged.find((m) => m.id === p.id);
+              if (found) found.qty += p.qty;
+              else merged.push(p);
+            });
+            return merged;
           });
-          return merged;
-        });
+        }
+      } catch (err) {
+        console.error("Cart merge failed:", err);
+      } finally {
+        mergeInFlightRef.current = false;
+        setIsInitialized(true);
       }
     })();
   }, [currentUser]);
 
-  // Persist cart ទៅ Firestore សម្រាប់ logged-in users (debounced ដោយ useEffect deps)
+  // Persist to Firestore only AFTER initialization completes
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !isInitialized) return;
     const cartRef = doc(db, "carts", currentUser.uid);
     setDoc(cartRef, { items, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
-  }, [items, currentUser]);
+  }, [items, currentUser, isInitialized]);
 
   const addToCart = useCallback((product, qty = 1) => {
     setItems((prev) => {
@@ -57,7 +79,7 @@ export const CartProvider = ({ children }) => {
       if (exists) {
         return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + qty } : i));
       }
-      return [...prev, { id: product.id, name: product.name, price: product.price, image: product.image, qty }];
+      return [...prev, { id: product.id, name: product.name, price: product.price, image: product.image || "", qty }];
     });
   }, []);
 
@@ -71,7 +93,6 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = useCallback(() => setItems([]), []);
 
-  // useMemo កុំគណនា totals ឡើងវិញរាល់ render ដោយមិនចាំបាច់
   const { totalItems, totalPrice } = useMemo(
     () => ({
       totalItems: items.reduce((sum, i) => sum + i.qty, 0),

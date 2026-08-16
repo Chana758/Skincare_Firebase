@@ -1,4 +1,3 @@
-// src/data/products.js
 
 // menu for navbar and products data
 export const menuItems = [
@@ -8,6 +7,7 @@ export const menuItems = [
   { id: 4, name: "New Arrivals", link: "/new_arrivals", key: "nav.new_arrivals" },
   { id: 5, name: "About Us", link: "/about", key: "nav.about" },
   { id: 6, name: "Blog", link: "/blog", key: "nav.blog" },
+   {id:7 ,name: "contact", link: "/contact", key: "nav.contact"}
 ];
 
 // Categories for filtering products by skin type (used in Categories.jsx if needed)
@@ -49,7 +49,7 @@ export const shopCategories = [
   {
     id: "mask",
     name: "Mask",
-    image: "https://images.unsplash.com/photo-1598440947619-2c35bc9430c0?w=300&q=80",
+    image: "https://i.pinimg.com/736x/4a/79/1a/4a791a160cde082172626bd34b726dbc.jpg",
   },
 ];
 
@@ -129,7 +129,7 @@ export const products = [
     reviews: 156,
     bestseller: true,
     isNew: false,
-    image: "https://images.unsplash.com/photo-1598440947619-2c35bc9430c0?w=600&q=80",
+    image: "https://i.pinimg.com/736x/e4/4e/de/e44ede5c1a81cb6d9f40de8611fb55b8.jpg",
     description: "របាំងមុខពេលយប់ ជួយស្បែកភ្លឺរលោងពេលក្រោក។",
   },
   {
@@ -155,7 +155,7 @@ export const products = [
     reviews: 143,
     bestseller: true,
     isNew: false,
-    image: "https://images.unsplash.com/photo-1608248097239-ac1531dc3d3d?w=600&q=80",
+    image: "https://i.pinimg.com/736x/9c/7e/d3/9c7ed3d9122956e1b9781485350f2515.jpg",
     description: "ស្តរបំបាត់ខ្លាញ់លើស និងសំអាតរន្ធញើសជ្រៅ។",
   },
   {
@@ -181,7 +181,7 @@ export const products = [
     reviews: 112,
     bestseller: false,
     isNew: false,
-    image: "https://images.unsplash.com/photo-1585232004423-64c4e6dd5a1d?w=600&q=80",
+    image: "https://i.pinimg.com/1200x/2a/c2/b4/2ac2b4deea21a327204d63676a91d207.jpg",
     description: "ផ្តល់សំណើមស្រាល ស្ងប់ស្ងាត់ស្បែកដែលងាយឆាប់រលាក។",
   },
   {
@@ -194,7 +194,7 @@ export const products = [
     reviews: 94,
     bestseller: false,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1620916297397-a4a5402a3c94?w=600&q=80",
+    image: "https://i.pinimg.com/736x/11/10/e0/1110e025d3c2abd21660870a386e533d.jpg",
     description: "ការពារកម្តៅថ្ងៃធម្មជាតិ សមស្របសម្រាប់ស្បែកទន់ភ្លន់។",
   },
   {
@@ -211,42 +211,113 @@ export const products = [
     description: "សម្អាតជ្រៅជាមួយធ្យូងសកម្ម បំបាត់ភាពខាំង់ស្បែក។",
   },
 ];
-
 // Testimonials for Testimonials.jsx
 export const testimonials = [
   {
     id: "t1",
     name: "Sophea Kim",
     rating: 5,
-    text: "ស្បែកខ្ញុំភ្លឺរលោងឡើងច្រើនក្រោយប្រើ Vitamin C Serum រយៈពេលតែ 2 សប្តាហ៍! មិនធ្វើឲ្យស្បែកឡើងកន្ទួលទេ។",
+    text: "My skin became much brighter and glowing after using the Vitamin C Serum for just 2 weeks! It didn't cause any breakouts.",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
   },
   {
     id: "t2",
     name: "David Chan",
     rating: 5,
-    text: "Cleanser ស្រាល ស្អាតណាស់ តម្លៃសមរម្យ ហើយដឹកជញ្ជូនលឿនផងដែរ។ ខ្ញុំនឹងទិញម្តងទៀតជាមិនខាន។",
+    text: "The cleanser is gentle yet thoroughly clean, reasonably priced, and shipping was fast too. I will definitely buy again.",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
   },
   {
     id: "t3",
     name: "Ratana Sok",
     rating: 4,
-    text: "Moisturizer ល្អសម្រាប់ស្បែកស្ងួត ផ្តល់សំណើមបានយូរ។ Packaging ក៏ស្រស់ស្អាតដែរ។",
+    text: "Great moisturizer for dry skin, provides long-lasting hydration. The packaging is very nice as well.",
     avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80",
   },
   {
     id: "t4",
     name: "Lina Heng",
     rating: 5,
-    text: "Sunscreen មិនស្អិត មិនប្រែពណ៌ស្បែកទេ ស័ក្តិសមសម្រាប់ប្រើប្រចាំថ្ងៃណាស់។",
+    text: "The sunscreen is non-sticky and doesn't leave a white cast, perfect for daily use.",
     avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80",
   },
   {
     id: "t5",
     name: "Vibol Chea",
     rating: 5,
-    text: "Sleeping Mask ធ្វើឲ្យស្បែកខ្ញុំមានសំណើមពេលក្រោកព្រឹក មិនស្ងួតធម្មតាទៀតទេ។",
+    text: "The sleeping mask keeps my skin hydrated by morning, no more dryness.",
     avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80",
+  },
+];
+// (នៅខាងចុងនៃ src/data/products.js)
+
+export const blogCategories = ["All", "Skincare Tips", "Ingredients", "Routine", "Lifestyle"];
+
+export const blogPosts = [
+  {
+    id: "b1",
+    title: "5 Steps to a Perfect Morning Skincare Routine",
+    excerpt: "Start your day right with a simple, effective routine that protects and hydrates your skin before you face the world.",
+    category: "Routine",
+    author: "Sophea K.",
+    date: "2026-06-28",
+    readTime: "4 min read",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1200&q=80",
+  },
+  {
+    id: "b2",
+    title: "Understanding Hyaluronic Acid: The Hydration Hero",
+    excerpt: "Why this tiny molecule can hold up to 1000x its weight in water — and how to actually use it correctly.",
+    category: "Ingredients",
+    author: "Dara P.",
+    date: "2026-06-20",
+    readTime: "6 min read",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+  },
+  {
+    id: "b3",
+    title: "How to Layer Your Skincare Products Correctly",
+    excerpt: "Thinnest to thickest — the golden rule that changes everything about how your products actually work.",
+    category: "Skincare Tips",
+    author: "Ratana S.",
+    date: "2026-06-12",
+    readTime: "5 min read",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
+  },
+  {
+    id: "b4",
+    title: "Sleep, Stress & Skin: The Lifestyle Connection",
+    excerpt: "Your skincare shelf can only do so much. Here's how daily habits quietly shape your skin's health.",
+    category: "Lifestyle",
+    author: "Sophea K.",
+    date: "2026-06-02",
+    readTime: "7 min read",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80",
+  },
+  {
+    id: "b5",
+    title: "Vitamin C vs Niacinamide: Which One First?",
+    excerpt: "Two skincare superstars, one common question. We break down when and how to use each for maximum glow.",
+    category: "Ingredients",
+    author: "Dara P.",
+    date: "2026-05-22",
+    readTime: "5 min read",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1598440947619-2c35bc9430c0?w=800&q=80",
+  },
+  {
+    id: "b6",
+    title: "Building a Minimalist Skincare Routine That Works",
+    excerpt: "Less can be more. Here's how to cut down to the essentials without sacrificing results.",
+    category: "Routine",
+    author: "Ratana S.",
+    date: "2026-05-10",
+    readTime: "4 min read",
+    featured: false,
+    image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800&q=80",
   },
 ];

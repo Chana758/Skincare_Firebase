@@ -1,46 +1,130 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isSignedIn() {
       return request.auth != null;
     }
-    function isAdmin() {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+
+    // Safe check: ផ្ទៀងផ្ទាត់ 'role' ក្នុង token ជាមុនសិន ដើម្បីការពារ Runtime Error
+    function role() {
+      return isSignedIn()
+        ? ('role' in request.auth.token
+            ? request.auth.token.role
+            : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+                : "customer"))
+        : "guest";
     }
 
-    match /users/{uid} {
-      allow read: if isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid);
-      allow update: if isOwner(uid) || isAdmin();
+    function isAdmin() {
+      return role() == "admin";
+    }
+
+    function isStaffOrAdmin() {
+      return role() == "staff" || role() == "admin";
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isStaffOrAdmin();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if isAdmin()
+        || (isOwner(userId) && !("role" in request.resource.data.diff(resource.data).affectedKeys()));
       allow delete: if isAdmin();
     }
 
+    // PRODUCTS COLLECTION
     match /products/{productId} {
+      allow read: if true;
+      allow write: if isStaffOrAdmin();
+
+      // អនុញ្ញាតឲ្យ Customer កាត់ Stock ពេលទិញទំនិញ
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["stock"])
+        && request.resource.data.stock is int
+        && request.resource.data.stock >= 0;
+    }
+
+    // CATEGORIES COLLECTION
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isStaffOrAdmin();
+    }
+
+    // BLOGS COLLECTION
+    match /blogs/{postId} {
+      allow read: if true;
+      allow write: if isStaffOrAdmin();
+    }
+
+    // ORDERS COLLECTION
+    match /orders/{orderId} {
+      allow read: if isStaffOrAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && (
+          (request.resource.data.source == "pos" && isStaffOrAdmin())
+          || (request.resource.data.source == "online" && request.resource.data.userId == request.auth.uid)
+        )
+        && request.resource.data.status in ["pending", "awaiting_payment", "paid"];
+
+      allow update: if isStaffOrAdmin()
+        || (
+          isSignedIn()
+          && resource.data.userId == request.auth.uid
+          && resource.data.status in ["pending", "awaiting_payment"]
+          && request.resource.data.status == "cancelled"
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(["status", "cancelledAt", "cancelReason", "updatedAt"])
+        )
+        || (
+          isSignedIn()
+          && resource.data.userId == request.auth.uid
+          && resource.data.status == "awaiting_payment"
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(["payment", "updatedAt"])
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /carts/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /favorites/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /discounts/{code} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    match /carts/{uid} {
-      allow read, write: if isOwner(uid);
-    }
-
-    match /favorites/{uid} {
-      allow read, write: if isOwner(uid);
-    }
-
-    match /contact_messages/{messageId} {
+    match /contact_messages/{msgId} {
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read, update, delete: if isStaffOrAdmin();
     }
 
-    match /newsletter_subscribers/{docId} {
+    match /newsletter_subscribers/{id} {
       allow create: if true;
       allow read, delete: if isAdmin();
+    }
+
+    match /reports/{date} {
+      allow read: if isStaffOrAdmin();
+      allow write: if isStaffOrAdmin();
+    }
+
+    match /notifications/{notifId} {
+      allow read, update, delete: if isStaffOrAdmin();
+      allow create: if isSignedIn();
     }
   }
 }

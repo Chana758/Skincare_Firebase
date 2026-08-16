@@ -1,21 +1,36 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+
+const friendlyError = (code) => {
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "An account already exists with this email.";
+    case "auth/weak-password":
+      return "Password should be at least 6 characters.";
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    default:
+      return "Something went wrong. Please try again.";
+  }
+};
 
 const Register = () => {
+  const { register, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
-  const [status, setStatus] = useState("idle"); // idle | success
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  // Handle form submission (Static)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Simple client-side validation
     if (form.password !== form.confirm) {
       setError("Passwords do not match");
       return;
@@ -25,8 +40,25 @@ const Register = () => {
       return;
     }
 
-    // Set status to success for static demonstration
-    setStatus("success");
+    setSubmitting(true);
+    try {
+      await register({ name: form.name, email: form.email, password: form.password });
+      navigate("/", { replace: true });
+    } catch (err) {
+      setError(friendlyError(err.code));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setError("");
+    try {
+      await loginWithGoogle();
+      navigate("/", { replace: true });
+    } catch {
+      setError("Google sign-up failed. Please try again.");
+    }
   };
 
   return (
@@ -40,12 +72,6 @@ const Register = () => {
 
         {error && (
           <div className="bg-rose-50 text-rose-500 text-xs rounded-lg px-4 py-3 mb-5">{error}</div>
-        )}
-        
-        {status === "success" && (
-          <div className="bg-emerald-50 text-emerald-600 text-xs rounded-lg px-4 py-3 mb-5 text-center">
-            Account created successfully! (Static Mode)
-          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,9 +130,10 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full bg-rose-400 hover:bg-rose-500 text-white text-sm font-semibold uppercase tracking-wider py-3.5 rounded-full transition"
+            disabled={submitting}
+            className="w-full bg-rose-400 hover:bg-rose-500 text-white text-sm font-semibold uppercase tracking-wider py-3.5 rounded-full transition disabled:opacity-60"
           >
-            Create Account
+            {submitting ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
@@ -117,7 +144,7 @@ const Register = () => {
         </div>
 
         <button
-          onClick={() => alert("Google registration clicked!")}
+          onClick={handleGoogle}
           className="w-full border border-gray-200 text-sm font-medium py-3.5 rounded-full hover:bg-gray-50 transition"
         >
           Continue with Google

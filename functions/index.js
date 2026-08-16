@@ -1,32 +1,20 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const { setGlobalOptions } = require("firebase-functions/v2");
+setGlobalOptions({ region: "asia-southeast1", maxInstances: 10 });
 
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
-const logger = require("firebase-functions/logger");
+// Auth
+exports.setUserRole = require("./src/auth/setUserRole").setUserRole;
+exports.createStaffUser = require("./src/auth/createStaffUser").createStaffUser;
+exports.deleteUserAccount = require("./src/auth/deleteUserAccount").deleteUserAccount;
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+// Orders
+exports.createOrder = require("./src/orders/createOrder").createOrder;
+exports.updateOrderStatus = require("./src/orders/updateOrderStatus").updateOrderStatus;
+exports.cancelOrder = require("./src/orders/cancelOrder").cancelOrder;
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// Payments
+exports.generateKHQR = require("./src/payments/generateKHQR").generateKHQR;
+exports.markOrderPaid = require("./src/payments/markOrderPaid").markOrderPaid;
+exports.verifyPaymentWebhook = require("./src/payments/verifyPaymentWebhook").verifyPaymentWebhook;
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Reports
+exports.dailySalesSummary = require("./src/reports/dailySalesSummary").dailySalesSummary;
