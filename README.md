@@ -2,7 +2,18 @@
 
 A full-featured skincare e-commerce platform built with **React, Vite, and Firebase**, featuring a customer storefront, an admin dashboard, user and product management, and a staff Point of Sale (POS) system.
 
+> ⚠️ **Practice / portfolio project.** All data is fake. Payments are simulated.
+
 🔗 **Live Demo:** [Lumière Skincare](https://skincare-firebase.vercel.app)
+
+---
+
+## ⚠️ Demo Notice
+
+- This is a demo with **fake data**. Data may be reset or deleted at any time.
+- **Do not use real accounts.** Please don't register with your real email, phone number, address or password. Use the demo accounts below.
+- **Payments are simulated.** The KHQR code uses a fake merchant ID, so no real payment can be made or confirmed. Please do not try to pay with a real bank app.
+- Do not enter any real personal information.
 
 ---
 
@@ -50,24 +61,25 @@ The system supports three roles:
 | **Staff** | Accesses authorized staff features, including the POS system. |
 | **Customer** | Browses products, manages favorites and cart items, and accesses personal orders. |
 
-Role-based route guards help restrict access to the appropriate areas of the application.
+Role-based route guards restrict access in the UI, and Firestore Security Rules and Cloud Functions enforce permissions on the server.
 
 ## 🔑 Demo Accounts
 
-Use the following demo email addresses to identify the available test accounts.
+These are fake accounts for testing only.
 
 | Role | Demo Email |
 |---|---|
-| Admin | `demoadmin@gmail.com` |
-| Staff | `demostaff@gmail.com` |
+| Admin | `demoadmin@example.com` |
+| Staff | `demostaff@example.com` |
+| User (Customer) | `demouser@example.com` |
 
 **How to access:**
 1. Open the [Live Demo](https://skincare-firebase.vercel.app).
 2. Navigate to the login page.
-3. Enter the email associated with the demo role.
-4. Use the corresponding demo password provided by the project owner.
+3. Enter the email of the role you want to test.
+4. Use the demo password provided by the project owner (passwords are not published in this README).
 
-> **Note:** Demo account access depends on the Firebase configuration and whether these accounts are currently enabled. Demo passwords are not published in this README.
+> **Note:** Demo accounts depend on the Firebase configuration and may be reset or disabled at any time.
 
 ## 📸 Screenshots
 
@@ -105,7 +117,7 @@ Use the following demo email addresses to identify the available test accounts.
 |---|---|---|
 | Authentication | `createStaffUser`, `deleteUserAccount`, `setUserRole` | Manage user accounts and roles. |
 | Orders | `createOrder`, `cancelOrder`, `updateOrderStatus` | Handle order creation, cancellation, and status changes. |
-| Payments | `generateKHQR`, `markOrderPaid`, `verifyPaymentWebhook` | Handle KHQR generation and payment verification. |
+| Payments | `generateKHQR`, `markOrderPaid`, `verifyPaymentWebhook` | Simulated KHQR generation and payment verification (demo only). |
 | Reports | `dailySalesSummary` | Generate daily sales summaries. |
 
 ## 📁 Project Structure
@@ -151,9 +163,9 @@ npm install
 
 1. Create a project in the [Firebase Console](https://console.firebase.google.com/).
 2. Enable Firebase Authentication, Cloud Firestore, and Firebase Storage.
-3. Configure the Firebase web settings using the environment variable names expected by `src/firebase/config.js`.
-4. Create a `.env` file in the project root and add the required configuration.
-5. Never commit private credentials or sensitive environment variables to GitHub.
+3. Copy `.env.example` to `.env` and fill in your own Firebase web config.
+4. Use a fake merchant ID for KHQR. Never use a real bank account.
+5. Never commit `.env` or any private credentials to GitHub.
 
 ### 3. Run the Frontend
 
